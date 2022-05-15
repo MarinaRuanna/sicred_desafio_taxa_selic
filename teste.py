@@ -15,7 +15,7 @@ Questão 3: Retorna não apenas o resultado, mas retorna de forma estruturada:
 import requests
 from datetime import datetime
 
-def rendimento_poupanca(valor_inicial: float, selic: list, referencial: list) -> float:
+def rendimento_poupanca(valor_inicial: float, selic: list, referencial: float) -> float:
     mes: int = 1
     rendimento = []
     rendimento_mes: float = 0
@@ -24,21 +24,18 @@ def rendimento_poupanca(valor_inicial: float, selic: list, referencial: list) ->
     print('------------------')
     for i in selic:
         if i < 8.5:
-                rendimento_mes: float = i * 0.70
+                rendimento_mes: float = i * 0.70 + referencial
 
 
         elif i >= 8.5:
-                rendimento_mes: float = valor_inicial * 0.05
+                rendimento_mes: float = valor_inicial * 0.05 + referencial
 
-
-        for j in referencial:
-            rendimento_mes = rendimento_mes + j
 
         rendimento.append(rendimento_mes)
         print(f'\nMes: {mes}:\n----\nTaxa SELIC: {i} - Rendimento: R$ {rendimento_mes:.3}')
         mes = mes + 1
 
-    print(rendimento)
+
     rendimento_total = sum(rendimento)
     resultado_investimento = valor_inicial + rendimento_total
     print('\n----------------------------')
@@ -66,15 +63,17 @@ try:
 
 
     valores_selic = [float(item['valor']) for item in taxas_selic]
-    valores_referencial = [float(item['valor']) for item in taxas_selic]
+    valores_referencial = [float(item['valor']) for item in taxas_referencial]
     meses = len(valores_selic)
-    taxas_referencial_mesal = sum(valores_referencial) / meses
+    valor_referencial_mesal = sum(valores_referencial) / meses
+    print(valor_referencial_mesal)
 
-    print(valores_referencial)
+
+
     """
     Chamando a função e aplicando os parâmetros fornecidos pelo usuário.
     """
-    rendimento_poupanca(investimento_inicial, valores_selic, valores_referencial)
+    rendimento_poupanca(investimento_inicial, valores_selic, valor_referencial_mesal)
 
 
 
@@ -92,6 +91,6 @@ def test_rendimento_poupanca() -> None:
     print('\n-------------')
     print('Texte Assert:')
     print('-------------')
-    assert rendimento_poupanca(1, [10, 5.0, 0.20, 0.30], [0.0, 0.0, 0.0, 0.0]) == 4.90
+    assert rendimento_poupanca(1, [10, 5.0, 0.20, 0.30], 0) == 4.90
 
 test_rendimento_poupanca()
