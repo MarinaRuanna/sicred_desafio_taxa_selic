@@ -16,39 +16,36 @@ import requests
 from datetime import datetime
 
 def rendimento_poupanca(valor_inicial: float, selic: list, referencial: list) -> float:
-
+    mes: int = 1
     rendimento = []
+    rendimento_mes: float = 0
     print('\n------------------')
     print('Rendimento ao mes:')
     print('------------------')
     for i in selic:
-        mes: int = 1
         if i < 8.5:
-            rendimento_mes: float = i * 0.70
-            for j in referencial:
-                rendimento_mes = rendimento_mes + j
-
-            print(f'\nMes {mes}: \nTaxa SELIC: {i} - Rendimento: R$ {rendimento_mes:.3}')
-            mes = mes + 1
-            rendimento.append(rendimento_mes)
+                rendimento_mes: float = i * 0.70
 
 
         elif i >= 8.5:
-            rendimento_mes: float = valor_inicial * 0.05
-            for j in referencial:
-                rendimento_mes = rendimento_mes + j
-            print(f'Mes: {mes} - Taxa SELIC: {i} - Rendimento: R$ {rendimento_mes:.3}')
-            mes = mes + 1
-            rendimento.append(rendimento_mes)
+                rendimento_mes: float = valor_inicial * 0.05
 
 
-        rendimento_total = sum(rendimento)
-        resultado_investimento = valor_inicial + rendimento_total
-        print('\n----------------------------')
-        print('Informações do investimento:')
-        print('----------------------------')
-        print(f'Investimento inicial: R$ {valor_inicial:.2f}\nRendimento total: R$ {rendimento_total:.2f}\nResultado final do investimento: R$ {resultado_investimento:.2f}\n')
-        return float(resultado_investimento)
+        for j in referencial:
+            rendimento_mes = rendimento_mes + j
+
+        rendimento.append(rendimento_mes)
+        print(f'\nMes: {mes}:\n----\nTaxa SELIC: {i} - Rendimento: R$ {rendimento_mes:.3}')
+        mes = mes + 1
+
+    print(rendimento)
+    rendimento_total = sum(rendimento)
+    resultado_investimento = valor_inicial + rendimento_total
+    print('\n----------------------------')
+    print('Informações do investimento:')
+    print('----------------------------')
+    print(f'Investimento inicial: R$ {valor_inicial:.2f}\nRendimento total: R$ {rendimento_total:.2f}\nResultado final do investimento: R$ {resultado_investimento:.2f}\n')
+    return float(resultado_investimento)
 
 
 try:
@@ -65,14 +62,21 @@ try:
 
     taxas_selic: dict = ts.json()
     taxas_referencial: dict = tr.json()
+    print(taxas_referencial)
+
 
     valores_selic = [float(item['valor']) for item in taxas_selic]
-    valores_referencial: list = [float(item['valor']) for item in taxas_referencial]
+    valores_referencial = [float(item['valor']) for item in taxas_selic]
+    meses = len(valores_selic)
+    taxas_referencial_mesal = sum(valores_referencial) / meses
 
+    print(valores_referencial)
     """
     Chamando a função e aplicando os parâmetros fornecidos pelo usuário.
     """
     rendimento_poupanca(investimento_inicial, valores_selic, valores_referencial)
+
+
 
 except ValueError:
     print('Dados digitados são inválidos.')
@@ -90,3 +94,4 @@ def test_rendimento_poupanca() -> None:
     print('-------------')
     assert rendimento_poupanca(1, [10, 5.0, 0.20, 0.30], [0.0, 0.0, 0.0, 0.0]) == 4.90
 
+test_rendimento_poupanca()
